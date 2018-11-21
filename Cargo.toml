@@ -1,0 +1,22 @@
+[package]
+name = "v2conv"
+version = "0.1.0"
+authors = ["Florian Merz <flomerz@gmail.com>"]
+
+[lib]
+name = "v2conv"
+path = "src/lib.rs"
+
+[[bin]]
+name = "v2conv"
+path = "src/main.rs"
+
+[dependencies]
+clap = "2.32.0"
+image = "0.20.1"
+rand = "0.6"
+reqwest = "0.9.5"
+serde = "1.0.80"
+serde_derive = "1.0.80"
+serde_json = "1.0.32"
+uuid = { version = "0.7", features = ["v5"] }
