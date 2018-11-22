@@ -239,7 +239,7 @@ pub struct IdentitiesAttributesValuesArray {
     #[serde(default)]
     pub bugzilla_mozilla_org_id: StandardAttributeString,
     #[serde(default)]
-    pub bugzilla_mozilla_primary_email: StandardAttributeString,
+    pub bugzilla_mozilla_org_primary_email: StandardAttributeString,
     #[serde(default)]
     pub mozilla_ldap_id: StandardAttributeString,
     #[serde(default)]
@@ -274,7 +274,7 @@ impl Default for IdentitiesAttributesValuesArray {
                 Classification::default(),
             ),
             bugzilla_mozilla_org_id: StandardAttributeString::default(),
-            bugzilla_mozilla_primary_email: StandardAttributeString::with(
+            bugzilla_mozilla_org_primary_email: StandardAttributeString::with(
                 Some(Display::Public),
                 Classification::default(),
             ),

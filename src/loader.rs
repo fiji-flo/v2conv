@@ -31,6 +31,9 @@ pub fn load_all(hris: &str, ldap: &str, mozillians: &str) -> Result<HashMap<Stri
 }
 
 fn load_hris(hris: &str,h: &mut HashMap<String, Data>) -> Result<(), String> {
+    if hris.is_empty() {
+        return Ok(());
+    }
     let mut hris_data = load_json(hris)?;
 
     for e in hris_data
@@ -58,6 +61,9 @@ fn load_hris(hris: &str,h: &mut HashMap<String, Data>) -> Result<(), String> {
 }
 
 fn load_ldap(ldap: &str, h: &mut HashMap<String, Data>, ldap_to_mail: &mut HashMap<String, String>) -> Result<(), String> {
+    if ldap.is_empty() {
+        return Ok(());
+    }
     let mut ldap_data = load_json(ldap)?;
 
     for e in ldap_data
