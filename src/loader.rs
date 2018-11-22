@@ -30,7 +30,7 @@ pub fn load_all(hris: &str, ldap: &str, mozillians: &str) -> Result<HashMap<Stri
     Ok(h)
 }
 
-fn load_hris(hris: &str,h: &mut HashMap<String, Data>) -> Result<(), String> {
+fn load_hris(hris: &str, h: &mut HashMap<String, Data>) -> Result<(), String> {
     if hris.is_empty() {
         return Ok(());
     }
@@ -60,7 +60,11 @@ fn load_hris(hris: &str,h: &mut HashMap<String, Data>) -> Result<(), String> {
     Ok(())
 }
 
-fn load_ldap(ldap: &str, h: &mut HashMap<String, Data>, ldap_to_mail: &mut HashMap<String, String>) -> Result<(), String> {
+fn load_ldap(
+    ldap: &str,
+    h: &mut HashMap<String, Data>,
+    ldap_to_mail: &mut HashMap<String, String>,
+) -> Result<(), String> {
     if ldap.is_empty() {
         return Ok(());
     }
@@ -101,7 +105,11 @@ fn load_ldap(ldap: &str, h: &mut HashMap<String, Data>, ldap_to_mail: &mut HashM
     Ok(())
 }
 
-fn load_mozillians(mozillians: &str, h: &mut HashMap<String, Data>, ldap_to_mail: &HashMap<String, String>) -> Result<(), String> {
+fn load_mozillians(
+    mozillians: &str,
+    h: &mut HashMap<String, Data>,
+    ldap_to_mail: &HashMap<String, String>,
+) -> Result<(), String> {
     if mozillians.is_empty() {
         return Ok(());
     }
@@ -116,9 +124,9 @@ fn load_mozillians(mozillians: &str, h: &mut HashMap<String, Data>, ldap_to_mail
         let user_id = e["user_id"].clone();
         if let Some(user_id) = user_id.as_str() {
             if let Some(mail) = ldap_to_mail.get(user_id) {
-                    if let Some(data) = h.get_mut(mail) {
-                        data.mozillians = e;
-                    }
+                if let Some(data) = h.get_mut(mail) {
+                    data.mozillians = e;
+                }
             } else {
                 h.insert(
                     String::from(user_id),
@@ -126,14 +134,10 @@ fn load_mozillians(mozillians: &str, h: &mut HashMap<String, Data>, ldap_to_mail
                         hris: Value::default(),
                         ldap: Value::default(),
                         mozillians: e,
-                    }
+                    },
                 );
             }
-
         }
-        
-
-
     }
     Ok(())
 }

@@ -432,12 +432,14 @@ mod test {
         {
                 "publisher": {
                     "alg": "RS256",
+                    "name": "mozilliansorg",
                     "typ": "JWS",
                     "value": "foobar"
                 },
                 "additional": [
                     {
                         "alg": "RS256",
+                        "name": "mozilliansorg",
                         "typ": "JWS",
                         "value": ""
                     }

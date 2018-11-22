@@ -3,8 +3,8 @@ use std::path::PathBuf;
 
 use rand::distributions::Alphanumeric;
 use rand::{thread_rng, Rng};
-use serde_json::Value;
 use serde::de::Error;
+use serde_json::Value;
 use uuid::Uuid;
 
 use avatar::*;
@@ -86,7 +86,12 @@ pub fn map_ldap(
     Ok(p2)
 }
 
-fn handle_picture(v: Value, input_path: &Option<PathBuf>, output_path: &Option<PathBuf>, name: &str) -> Value {
+fn handle_picture(
+    v: Value,
+    input_path: &Option<PathBuf>,
+    output_path: &Option<PathBuf>,
+    name: &str,
+) -> Value {
     match (input_path, output_path, v["value"].clone().as_str()) {
         (Some(i), Some(o), Some(p)) => {
             let mut input = i.clone();
