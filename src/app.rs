@@ -9,6 +9,7 @@ use ldap::map_ldap;
 use loader::{load_all, Data};
 use mozillians::map_mozillians;
 use schema::Profile;
+use writer::write_enumerated;
 
 const VERSION: &str = env!("CARGO_PKG_VERSION");
 
@@ -21,7 +22,15 @@ where
         .about("merge them all")
         .version(VERSION)
         .author("Florian Merz <fmerz@mozilla.com>")
-        .subcommand(
+        .arg(
+            Arg::with_name("out")
+                .short("o")
+                .long("out")
+                .global(true)
+                .takes_value(true)
+                .number_of_values(1)
+                .help("output file"),
+        ).subcommand(
             SubCommand::with_name("merge")
                 .about("merge data into profile v2")
                 .arg(
@@ -40,13 +49,6 @@ where
                         .number_of_values(1)
                         .required(false)
                         .help("ldap data"),
-                ).arg(
-                    Arg::with_name("out")
-                        .short("o")
-                        .long("out")
-                        .takes_value(true)
-                        .number_of_values(1)
-                        .help("output file"),
                 ).arg(
                     Arg::with_name("mozillians")
                         .short("m")
@@ -77,6 +79,7 @@ where
                     Arg::with_name("split")
                         .short("s")
                         .long("split")
+                        .requires("out")
                         .takes_value(true)
                         .number_of_values(1)
                         .help("split output in chunks of s"),
@@ -85,19 +88,28 @@ where
         .get_matches_from(itr)
 }
 
-pub fn run<I, T>(itr: I) -> Result<Vec<String>, String>
+pub fn run<I, T>(itr: I) -> Result<(), String>
 where
     I: IntoIterator<Item = T>,
     T: Into<OsString> + Clone,
 {
     let all_matches = parse_args(itr);
-    if let Some(m) = all_matches.subcommand_matches("merge") {
+    let out = if let Some(m) = all_matches.subcommand_matches("merge") {
         run_merge(m)
     } else if let Some(m) = all_matches.subcommand_matches("default") {
         run_default(m)
     } else {
         Err(String::from("did we forget the template subcommand?"))
+    }?;
+    if let Some(out_path) = all_matches.value_of("out") {
+        write_enumerated(out_path, &out)?;
+    } else {
+        for o in out {
+            println!("{}", o);
+        }
     }
+
+    Ok(())
 }
 
 pub fn run_default(_: &ArgMatches) -> Result<Vec<String>, String> {
@@ -134,7 +146,7 @@ pub fn run_merge(matches: &ArgMatches) -> Result<Vec<String>, String> {
             } = d;
             if hris.is_object() && ldap.is_object() {
                 let mut p = Profile::default();
-                p = map_hris(p, hris);
+                p = map_hris(p, &hris);
                 match map_ldap(p, ldap, &avatars_in, &avatars_out) {
                     Ok(l) => {
                         p = l;
@@ -176,10 +188,22 @@ pub fn run_merge(matches: &ArgMatches) -> Result<Vec<String>, String> {
             }
             None
         }).collect();
-    let out = vec![
-        serde_json::to_string_pretty(&json!(profiles))
-            .map_err(|e| format!("{}", e))?
-            .to_owned(),
-    ];
-    Ok(out)
+    if matches.is_present("split") {
+        let split = value_t!(matches.value_of("split"), usize).unwrap_or_else(|e| e.exit());
+        profiles
+            .chunks(split)
+            .map(|p| {
+                serde_json::to_string_pretty(p)
+                    .map(|s| s.to_owned())
+                    .map_err(|e| format!("{}", e))
+            }).collect()
+    } else {
+        let out = vec![
+            serde_json::to_string_pretty(&json!(profiles))
+                .map_err(|e| format!("{}", e))?
+                .to_owned(),
+        ];
+
+        Ok(out)
+    }
 }

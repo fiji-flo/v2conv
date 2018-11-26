@@ -99,7 +99,7 @@ pub fn map_mozillians(
 
     if p2.picture.value.is_none() {
         p2.picture.value = serde_json::from_value(handle_picture(
-            mozillians["picture"].take(),
+            &mozillians["picture"],
             avatar_out,
             &format!("{}.png", dinopark_id),
         ))?;
@@ -122,24 +122,21 @@ pub fn map_mozillians(
     Ok(p2)
 }
 
-fn handle_picture(v: Value, output_path: &Option<PathBuf>, name: &str) -> Value {
-    match (output_path, v.clone().as_str()) {
-        (Some(o), Some(u)) => {
-            if let Ok(mut resp) = reqwest::get(u) {
-                let mut buf: Vec<u8> = vec![];
-                if resp.copy_to(&mut buf).is_ok() {
-                    match convert_buf(&buf, &o, &name) {
-                        Ok(()) => {
-                            return json!(name);
-                        }
-                        Err(e) => {
-                            eprintln!("error handling picture: {}", e);
-                        }
-                    };
-                }
+fn handle_picture(v: &Value, output_path: &Option<PathBuf>, name: &str) -> Value {
+    if let (Some(o), Some(u)) = (output_path, v.clone().as_str()) {
+        if let Ok(mut resp) = reqwest::get(u) {
+            let mut buf: Vec<u8> = vec![];
+            if resp.copy_to(&mut buf).is_ok() {
+                match convert_buf(&buf, &o, &name) {
+                    Ok(()) => {
+                        return json!(name);
+                    }
+                    Err(e) => {
+                        eprintln!("error handling picture: {}", e);
+                    }
+                };
             }
         }
-        _ => {}
     };
     Value::Null
 }

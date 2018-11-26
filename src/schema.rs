@@ -419,7 +419,7 @@ impl Default for Profile {
 
 #[cfg(test)]
 mod test {
-    use super::*;
+    use super::{Profile, Signature, Value};
     #[test]
     fn basic_profile() {
         let p = Profile::default();

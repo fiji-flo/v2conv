@@ -4,7 +4,7 @@ use serde_json::Value;
 
 use schema::*;
 
-pub fn map_hris(mut p2: Profile, hris: Value) -> Profile {
+pub fn map_hris(mut p2: Profile, hris: &Value) -> Profile {
     p2.access_information.hris.values = hris.clone();
 
     p2.staff_information.cost_center.value = hris["Cost_Center"].as_str().map(String::from);
@@ -32,7 +32,7 @@ pub fn map_hris(mut p2: Profile, hris: Value) -> Profile {
 
 fn censor_title(title: &str) -> String {
     let re = Regex::new(r#"((Management)|(Engineering)|(Development))(:? Mgmt \d$)"#).unwrap();
-    let censored = re.replace(&title, |caps: &Captures| format!("{}", &caps[1]));
+    let censored = re.replace(&title, |caps: &Captures| caps[1].to_string());
     let re = Regex::new(r#"(:? Mgmt \d$)"#).unwrap();
     let censored = re.replace(&censored, " Management");
     let re = Regex::new(r#" \d$"#).unwrap();
@@ -42,7 +42,7 @@ fn censor_title(title: &str) -> String {
 
 #[cfg(test)]
 mod test {
-    use super::*;
+    use super::censor_title;
     #[test]
     fn test_censor() {
         let title = "Foo Engineering Mgmt 5";

@@ -21,7 +21,7 @@ pub fn convert_path(path: &PathBuf, out: &PathBuf, name: &str) -> Result<(), Str
 
 pub fn convert(img: &DynamicImage, out: &PathBuf, name: &str) -> Result<(), String> {
     let (w, h) = img.dimensions();
-    let ratio = w as f64 / h as f64;
+    let ratio = f64::from(w) / f64::from(h);
     if ratio < 0.95 || ratio > 1.05 {
         return Err(format!("wrong ascpect ratio: {}", ratio));
     }
@@ -45,6 +45,6 @@ fn open_magic(path: &PathBuf) -> ImageResult<DynamicImage> {
     };
     let mut fin = BufReader::new(fin);
 
-    let format = image::guess_format(fin.fill_buf().map_err(|e| image::ImageError::from(e))?)?;
+    let format = image::guess_format(fin.fill_buf().map_err(image::ImageError::from)?)?;
     image::load(fin, format)
 }

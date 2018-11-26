@@ -1,3 +1,4 @@
+#[macro_use]
 extern crate clap;
 extern crate image;
 extern crate rand;
@@ -17,3 +18,4 @@ mod ldap;
 mod loader;
 mod mozillians;
 mod schema;
+mod writer;

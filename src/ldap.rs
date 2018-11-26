@@ -32,7 +32,7 @@ pub fn map_ldap(
             o.values()
                 .filter_map(|v| {
                     v.as_str().and_then(|s| match &s[0..min(s.len(), 3)] {
-                        "IRC" | "irc" => s.split(" ").last().map(|s| String::from(s)),
+                        "IRC" | "irc" => s.split(' ').last().map(String::from),
                         _ => None,
                     })
                 }).next()
@@ -74,7 +74,7 @@ pub fn map_ldap(
     p2.description.value = serde_json::from_value(ldap["description"]["value"].take())?;
 
     p2.picture.value = serde_json::from_value(handle_picture(
-        ldap["picture"].take(),
+        &ldap["picture"],
         avatar_in,
         avatar_out,
         &format!("{}.png", dinopark_id),
@@ -87,28 +87,25 @@ pub fn map_ldap(
 }
 
 fn handle_picture(
-    v: Value,
+    v: &Value,
     input_path: &Option<PathBuf>,
     output_path: &Option<PathBuf>,
     name: &str,
 ) -> Value {
-    match (input_path, output_path, v["value"].clone().as_str()) {
-        (Some(i), Some(o), Some(p)) => {
-            let mut input = i.clone();
-            let input_file_path = PathBuf::from(p);
-            if let Some(input_file_name) = input_file_path.file_name() {
-                input.push(input_file_name);
-                match convert_path(&input, &o, &name) {
-                    Ok(()) => {
-                        return json!(name);
-                    }
-                    Err(e) => {
-                        eprintln!("error handling picture: {}", e);
-                    }
-                };
-            }
+    if let (Some(i), Some(o), Some(p)) = (input_path, output_path, v["value"].clone().as_str()) {
+        let mut input = i.clone();
+        let input_file_path = PathBuf::from(p);
+        if let Some(input_file_name) = input_file_path.file_name() {
+            input.push(input_file_name);
+            match convert_path(&input, &o, &name) {
+                Ok(()) => {
+                    return json!(name);
+                }
+                Err(e) => {
+                    eprintln!("error handling picture: {}", e);
+                }
+            };
         }
-        _ => {}
     };
     Value::Null
 }
