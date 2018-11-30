@@ -2,6 +2,7 @@ use regex::Captures;
 use regex::Regex;
 use serde_json::Value;
 
+use tz::from_hris;
 use schema::*;
 
 pub fn map_hris(mut p2: Profile, hris: &Value) -> Profile {
@@ -26,6 +27,7 @@ pub fn map_hris(mut p2: Profile, hris: &Value) -> Profile {
     p2.staff_information.title.value = hris["businessTitle"].as_str().map(censor_title);
     p2.staff_information.worker_type.value = hris["WorkerType"].as_str().map(String::from);
     p2.staff_information.wpr_desk_number.value = hris["WPRDeskNumber"].as_str().map(String::from);
+    p2.timezone.value = from_hris(&hris["Time_Zone"].as_str().map(String::from).unwrap_or_default());
 
     p2
 }

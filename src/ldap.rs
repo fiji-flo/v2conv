@@ -1,30 +1,29 @@
 use std::cmp::min;
 use std::path::PathBuf;
 
-use rand::distributions::Alphanumeric;
-use rand::{thread_rng, Rng};
 use serde::de::Error;
 use serde_json::Value;
 use uuid::Uuid;
 
 use avatar::*;
 use schema::*;
+use username::generate_username;
 
 pub fn map_ldap(
     mut p2: Profile,
     mut ldap: Value,
     avatar_in: &Option<PathBuf>,
     avatar_out: &Option<PathBuf>,
+    entropy: &str,
 ) -> Result<Profile, serde_json::Error> {
+    let primary_email = ldap["primary_email"]["value"].take();
+    let primary_email = primary_email
+        .as_str()
+        .map(String::from)
+        .ok_or_else(|| Error::custom(format!("{:?}", ldap)))?;
     let dinopark_id = format!(
         "{}",
-        Uuid::new_v5(
-            &Uuid::NAMESPACE_URL,
-            ldap["primary_email"]["value"]
-                .as_str()
-                .ok_or_else(|| Error::custom(format!("{:?}", ldap)))?
-                .as_bytes()
-        )
+        Uuid::new_v5(&Uuid::NAMESPACE_URL, primary_email.as_bytes())
     );
     let username = ldap["usernames"]["values"]
         .as_object()
@@ -36,7 +35,7 @@ pub fn map_ldap(
                         _ => None,
                     })
                 }).next()
-        }).unwrap_or_else(|| thread_rng().sample_iter(&Alphanumeric).take(30).collect());
+        }).unwrap_or_else(|| generate_username(&primary_email, entropy));
     if !ldap["first_name"]["value"].is_null() {
         p2.first_name.value = serde_json::from_value(ldap["first_name"]["value"].take())?;
     }

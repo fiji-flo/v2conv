@@ -1,0 +1,41 @@
+use chrono_tz::*;
+
+pub fn from_hris(hris_tz: &str) -> Option<String> {
+    let tz = match hris_tz {
+        "GMT United Kingdom Time (London)" => Europe::London,
+        "GMT Western European Time (Casablanca)" => Africa::Casablanca,
+        "GMT+01:00 Central European Time (Amsterdam)" => Europe::Amsterdam,
+        "GMT+01:00 Central European Time (Berlin)" => Europe::Berlin,
+        "GMT+01:00 Central European Time (Oslo)" => Europe::Oslo,
+        "GMT+01:00 Central European Time (Paris)" => Europe::Paris,
+        "GMT+01:00 Central European Time (Prague)" => Europe::Prague,
+        "GMT+01:00 Central European Time (Stockholm)" => Europe::Stockholm,
+        "GMT+02:00 Eastern European Time (Athens)" => Europe::Athens,
+        "GMT+02:00 Eastern European Time (Bucharest)" => Europe::Bucharest,
+        "GMT+02:00 Eastern European Time (Helsinki)" => Europe::Helsinki,
+        "GMT+02:00 South Africa Standard Time (Johannesburg)" => Africa::Johannesburg,
+        "GMT+03:00 East Africa Time (Nairobi)" => Africa::Nairobi,
+        "GMT+03:00 Moscow Standard Time (Moscow)" => Europe::Moscow,
+        "GMT+05:30 India Standard Time (Kolkata)" => Asia::Kolkata,
+        "GMT+07:00 Western Indonesia Time (Jakarta)" => Asia::Jakarta,
+        "GMT+08:00 Australian Western Standard Time (Perth)" => Australia::Perth,
+        "GMT+08:00 China Standard Time (Shanghai)" => Asia::Shanghai,
+        "GMT+08:00 Taipei Standard Time (Taipei)" => Asia::Taipei,
+        "GMT+09:00 Japan Standard Time (Tokyo)" => Asia::Tokyo,
+        "GMT+10:00 Australian Eastern Standard Time (Brisbane)" => Australia::Brisbane,
+        "GMT+12:00 New Zealand Time (Auckland)" => Pacific::Auckland,
+        "GMT-03:00 Argentina Standard Time (Buenos Aires)" => America::Buenos_Aires,
+        "GMT-03:00 Brasilia Standard Time (Recife)" => America::Recife,
+        "GMT-04:00 Atlantic Time (Halifax)" => America::Halifax,
+        "GMT-05:00 Eastern Time" => US::Eastern,
+        "GMT-06:00 Central Standard Time (Regina)" => America::Regina,
+        "GMT-06:00 Central Time (Chicago)" => America::Chicago,
+        "GMT-06:00 Central Time" => US::Central,
+        "GMT-07:00 Mountain Time" => US::Mountain,
+        "GMT-08:00 Pacific Time (Los Angeles)" => America::Los_Angeles,
+        "GMT-08:00 Pacific Time (Tijuana)" => America::Tijuana,
+        "GMT-08:00 Pacific Time" => US::Pacific,
+        _ => return None,
+    };
+    Some(tz.name().into())
+}

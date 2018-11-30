@@ -34,6 +34,14 @@ where
             SubCommand::with_name("merge")
                 .about("merge data into profile v2")
                 .arg(
+                    Arg::with_name("entropy")
+                        .short("e")
+                        .long("entropy")
+                        .takes_value(true)
+                        .number_of_values(1)
+                        .required(true)
+                        .help("add some entropy to the usernames"),
+                ).arg(
                     Arg::with_name("hris")
                         .short("w")
                         .long("hris")
@@ -130,6 +138,7 @@ pub fn run_merge(matches: &ArgMatches) -> Result<Vec<String>, String> {
     )?;
     let avatars_in = matches.value_of("avatars_in").map(PathBuf::from);
     let avatars_out = matches.value_of("avatars_out").map(PathBuf::from);
+    let entropy = matches.value_of("entropy").unwrap_or_default();
     let profiles: Vec<Profile> = data
         .into_iter()
         .filter(|(_, d)| {
@@ -147,7 +156,7 @@ pub fn run_merge(matches: &ArgMatches) -> Result<Vec<String>, String> {
             if hris.is_object() && ldap.is_object() {
                 let mut p = Profile::default();
                 p = map_hris(p, &hris);
-                match map_ldap(p, ldap, &avatars_in, &avatars_out) {
+                match map_ldap(p, ldap, &avatars_in, &avatars_out, entropy) {
                     Ok(l) => {
                         p = l;
                     }

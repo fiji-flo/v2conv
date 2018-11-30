@@ -1,3 +1,6 @@
+extern crate base64;
+extern crate chrono;
+extern crate chrono_tz;
 #[macro_use]
 extern crate clap;
 extern crate image;
@@ -12,6 +15,8 @@ extern crate serde_derive;
 extern crate uuid;
 
 pub mod app;
+mod username;
+mod tz;
 mod avatar;
 mod hris;
 mod ldap;
