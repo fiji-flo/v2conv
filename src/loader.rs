@@ -36,7 +36,7 @@ fn load_hris(hris: &str, h: &mut HashMap<String, Data>) -> Result<(), String> {
     }
     let mut hris_data = load_json(hris)?;
 
-    for e in hris_data
+    for e in hris_data["Report_Entry"]
         .as_array_mut()
         .ok_or_else(|| String::from("hirs data should be an array"))?
         .into_iter()

@@ -65,7 +65,7 @@ pub fn map_ldap(
     p2.usernames.values = serde_json::from_value(ldap["usernames"]["values"].take())?;
     p2.user_id.value = serde_json::from_value(ldap["user_id"]["value"].take())?;
     p2.login_method.value = serde_json::from_value(ldap["login_method"]["value"].take())?;
-    p2.primary_email.value = serde_json::from_value(ldap["primary_email"]["value"].take())?;
+    p2.primary_email.value = Some(primary_email);
     p2.access_information.ldap.values =
         serde_json::from_value(ldap["access_information"]["ldap"]["values"].take())?;
     p2.fun_title.value = serde_json::from_value(ldap["fun_title"]["value"].take())?;

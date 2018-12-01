@@ -51,6 +51,10 @@ pub fn map_mozillians(
         p2.description.value = serde_json::from_value(mozillians["description"].take())?;
     }
 
+    if p2.location.value.is_none() {
+        p2.location.value = serde_json::from_value(mozillians["location_preference"].take())?;
+    }
+
     if p2.timezone.value.is_none() {
         p2.timezone.value = serde_json::from_value(mozillians["timezone"].take())?;
     }
